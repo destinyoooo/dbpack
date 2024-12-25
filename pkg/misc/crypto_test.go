@@ -86,3 +86,7 @@ func TestAesDecryptCFB(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, []byte("exampleplaintext"), decrypted)
 }
+
+func TestName(t *testing.T) {
+	
+}
