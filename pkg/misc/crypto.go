@@ -22,10 +22,9 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"fmt"
-	"io"
-
 	"github.com/pkg/errors"
 	"github.com/tjfoc/gmsm/sm4"
+	"io"
 )
 
 type CryptoType int
@@ -314,43 +313,54 @@ func Sm4DecryptECB(encrypted, key []byte) (decrypted []byte, err error) {
 }
 
 func Sm4EncryptCBC(origData, key, iv []byte) (encrypted []byte, err error) {
-	if err = sm4.SetIV(iv); err != nil {
+	if err = sm4.SetIV(EnsureByteArrayLength16(iv)); err != nil {
 		return nil, err
 	}
 	return sm4.Sm4Cbc(key, origData, true)
 }
 
 func Sm4DecryptCBC(encrypted, key, iv []byte) (decrypted []byte, err error) {
-	if err = sm4.SetIV(iv); err != nil {
+	if err = sm4.SetIV(EnsureByteArrayLength16(iv)); err != nil {
 		return nil, err
 	}
 	return sm4.Sm4Cbc(key, encrypted, false)
 }
 
 func Sm4EncryptCFB(origData, key, iv []byte) (encrypted []byte, err error) {
-	if err = sm4.SetIV(iv); err != nil {
+	if err = sm4.SetIV(EnsureByteArrayLength16(iv)); err != nil {
 		return nil, err
 	}
 	return sm4.Sm4CFB(key, origData, true)
 }
 
 func Sm4DecryptCFB(encrypted, key, iv []byte) (decrypted []byte, err error) {
-	if err = sm4.SetIV(iv); err != nil {
+	if err = sm4.SetIV(EnsureByteArrayLength16(iv)); err != nil {
 		return nil, err
 	}
 	return sm4.Sm4CFB(key, encrypted, false)
 }
 
 func Sm4EncryptOFB(origData, key, iv []byte) (encrypted []byte, err error) {
-	if err = sm4.SetIV(iv); err != nil {
+	if err = sm4.SetIV(EnsureByteArrayLength16(iv)); err != nil {
 		return nil, err
 	}
 	return sm4.Sm4OFB(key, origData, true)
 }
 
 func Sm4DecryptOFB(encrypted, key, iv []byte) (decrypted []byte, err error) {
-	if err = sm4.SetIV(iv); err != nil {
+	if err = sm4.SetIV(EnsureByteArrayLength16(iv)); err != nil {
 		return nil, err
 	}
 	return sm4.Sm4OFB(key, encrypted, false)
+}
+
+func EnsureByteArrayLength16(input []byte) []byte {
+	if len(input) == 16 {
+		return input
+	}
+	repeated := append(input, input...)
+	for len(repeated) < 16 {
+		repeated = append(repeated, input...)
+	}
+	return repeated[:16]
 }
