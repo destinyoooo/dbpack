@@ -18,25 +18,39 @@ package misc
 
 import (
 	"encoding/hex"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAesEncryptGCM(t *testing.T) {
-	key, _ := hex.DecodeString("6368616e676520746869732070617373776f726420746f206120736563726574")
-	plaintext := []byte("exampleplaintext")
+	fmt.Println(hex.EncodeToString([]byte("123456789abcdefg")))
+	key, _ := hex.DecodeString("31323334353637383961626364656667")
+	//key, _ := hex.DecodeString("6368616e676520746869732070617373776f726420746f206120736563726574")
+	fmt.Println(string(key))
+	plaintext := []byte("sunset3")
+	//plaintext := []byte("exampleplaintext")
+	//encrypted, err := AesEncryptGCM(plaintext, key, []byte("greatdbpack!"))
 	encrypted, err := AesEncryptGCM(plaintext, key, []byte("greatdbpack!"))
+	fmt.Println("encrypted: ", string(encrypted))
 	assert.Nil(t, err)
 	t.Logf("%x", encrypted)
 }
 
 func TestAesDecryptGCM(t *testing.T) {
-	key, _ := hex.DecodeString("6368616e676520746869732070617373776f726420746f206120736563726574")
-	encrypted, _ := hex.DecodeString("dbb2b731c2c7e9f637195ba70f85e6a26e5cbe3f536ad3457d72cf8cc4c66df1")
+	key, _ := hex.DecodeString("31323334353637383961626364656667")
+	encrypted, _ := hex.DecodeString("8cc9106bfe89cb690265a3bb5caadcd88ea42ab8c035e8")
 	decrypted, err := AesDecryptGCM(encrypted, key, []byte("greatdbpack!"))
+	fmt.Println("decrypted: ", string(decrypted), "key: ", string(key), "encrypted: ", string(encrypted))
 	assert.Nil(t, err)
-	assert.Equal(t, []byte("exampleplaintext"), decrypted)
+	assert.Equal(t, []byte("sunset3"), decrypted)
+
+	//key, _ := hex.DecodeString("6368616e676520746869732070617373776f726420746f206120736563726574")
+	//encrypted, _ := hex.DecodeString("dbb2b731c2c7e9f637195ba70f85e6a26e5cbe3f536ad3457d72cf8cc4c66df1")
+	//decrypted, err := AesDecryptGCM(encrypted, key, []byte("greatdbpack!"))
+	//assert.Nil(t, err)
+	//assert.Equal(t, []byte("exampleplaintext"), decrypted)
 }
 
 func TestAesEncryptCBC(t *testing.T) {

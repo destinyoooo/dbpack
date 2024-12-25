@@ -1079,7 +1079,7 @@ func connCheck(conn net.Conn) error {
 
 	err = rawConn.Read(func(fd uintptr) bool {
 		var buf [1]byte
-		n, err := syscall.Read(int(fd), buf[:])
+		n, err := syscall.Read(syscall.Handle(int(fd)), buf[:])
 		switch {
 		case n == 0 && err == nil:
 			sysErr = io.EOF

@@ -23,7 +23,7 @@ services:
     networks:
       - local
     ports:
-    - "3306:3306"
+    - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: "123456"
     volumes:
@@ -31,7 +31,7 @@ services:
     command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
   dbpack:
     build:
-      context: ${PWD}
+      context: ../
       dockerfile: ./docker/Dockerfile
     container_name: dbpack
     networks:
@@ -41,11 +41,12 @@ services:
     volumes:
       - ./conf/config_sdb.yaml:/config.yaml
       - ./scripts/wait-for-mysql.sh:/wait-for-mysql.sh
-      - /root/:/var/log/:rw
+      - ./root/:/var/log/:rw
     depends_on:
       - etcd
       - mysql
-    command: ["./wait-for-mysql.sh","--","/dbpack", "start", "-c", "config.yaml"]
+    command: ["/dbpack", "start", "-c", "config.yaml"]
+#    command: ["./wait-for-mysql.sh","--","/dbpack", "start", "-c", "config.yaml"]
 networks:
   local:
     name: dbpack
