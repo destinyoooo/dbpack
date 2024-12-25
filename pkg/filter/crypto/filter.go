@@ -70,7 +70,7 @@ type ColumnCrypto struct {
 	Table      string
 	Columns    []string
 	AesKey     string
-	CryptoType int
+	CryptoType misc.CryptoType
 }
 
 type columnIndex struct {

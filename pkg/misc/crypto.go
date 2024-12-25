@@ -21,6 +21,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"fmt"
 	"io"
 
 	"github.com/pkg/errors"
@@ -41,8 +42,44 @@ const (
 	CryptoSM4OFB
 )
 
-func CryptoEncrypt(data []byte, key []byte, iv []byte, cryptoType int) ([]byte, error) {
-	switch CryptoType(cryptoType) {
+func (c *CryptoType) UnmarshalText(text []byte) error {
+	if c == nil {
+		return errors.New("can't unmarshal a nil *CryptoType")
+	}
+	if !c.unmarshalText(bytes.ToLower(text)) {
+		return fmt.Errorf("unrecognized protocol type: %q", text)
+	}
+	return nil
+}
+
+func (c *CryptoType) unmarshalText(text []byte) bool {
+	switch string(text) {
+	case "aesgcm":
+		*c = CryptoAESGCM
+	case "aescbc":
+		*c = CryptoAESCBC
+	case "aesecb":
+		*c = CryptoAESECB
+	case "aescfb":
+		*c = CryptoAESCFB
+	case "sm4gcm":
+		*c = CryptoSM4GCM
+	case "sm4ecb":
+		*c = CryptoSM4ECB
+	case "sm4cbc":
+		*c = CryptoSM4CBC
+	case "sm4cfb":
+		*c = CryptoSM4CFB
+	case "sm4ofb":
+		*c = CryptoSM4OFB
+	default:
+		return false
+	}
+	return true
+}
+
+func CryptoEncrypt(data []byte, key []byte, iv []byte, cryptoType CryptoType) ([]byte, error) {
+	switch cryptoType {
 	case CryptoAESGCM:
 		return AesEncryptGCM(data, key, iv)
 	case CryptoAESCBC:
@@ -66,8 +103,8 @@ func CryptoEncrypt(data []byte, key []byte, iv []byte, cryptoType int) ([]byte, 
 	}
 }
 
-func CryptoDecrypt(encrypted []byte, key []byte, iv []byte, cryptoType int) ([]byte, error) {
-	switch CryptoType(cryptoType) {
+func CryptoDecrypt(encrypted []byte, key []byte, iv []byte, cryptoType CryptoType) ([]byte, error) {
+	switch cryptoType {
 	case CryptoAESGCM:
 		return AesDecryptGCM(encrypted, key, iv)
 	case CryptoAESCBC:
